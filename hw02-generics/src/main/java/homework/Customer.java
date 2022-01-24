@@ -16,6 +16,7 @@ public class Customer implements Comparable<Customer>{
     }
 
     public Customer(Customer customer) {
+        if (customer == null) {throw new IllegalArgumentException("Customer cannot be null.");}
         this.id = customer.getId();
         this.name = customer.getName();
         this.scores = customer.getScores();
