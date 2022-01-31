@@ -1,6 +1,5 @@
 package com.infobit;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
 /**
@@ -8,8 +7,8 @@ import java.util.Map;
  */
 public class HelloOtus {
     public static void main(String[] args) {
-        Map items = ImmutableMap.of("Frodo", 3, "Sam", 4, "Gandalf", 1);
+        Map<String, Integer> items = Map.of("Frodo", 3, "Sam", 4, "Gandalf", 1);
 
-        items.entrySet().stream().forEach(System.out::println);
+        items.entrySet().forEach(System.out::println);
     }
 }
