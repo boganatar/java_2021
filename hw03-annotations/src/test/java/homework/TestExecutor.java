@@ -11,7 +11,7 @@ import java.util.List;
 @Slf4j
 public class TestExecutor {
 
-    public boolean executeTest(Class<?> testClass, Method testMethod, Method beforeMethod, Method afterMethod) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    private boolean executeTestMethods(Class<?> testClass, Method testMethod, Method beforeMethod, Method afterMethod) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
 
         Object testObject = testClass.getConstructor().newInstance();
         boolean result;
@@ -34,7 +34,7 @@ public class TestExecutor {
         return result;
     }
 
-    static List<Boolean> runTest(String className) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    public static List<Boolean> runTest(String className) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         TestExecutor testExecutor = new TestExecutor();
         Class<?> testClass =  Class.forName(className);
 
@@ -55,7 +55,7 @@ public class TestExecutor {
         }
 
         for (Method testMethod : testMethods) {
-            results.add(testExecutor.executeTest(testClass, testMethod, beforeMethod, afterMethod));
+            results.add(testExecutor.executeTestMethods(testClass, testMethod, beforeMethod, afterMethod));
         }
 
         return results;
