@@ -11,30 +11,30 @@ import java.util.List;
 @Slf4j
 public class TestExecutor {
 
-    public boolean executeTest(Method testMethod, Method beforeMethod, Method afterMethod) throws InvocationTargetException, IllegalAccessException {
+    public boolean executeTest(Class<?> testClass, Method testMethod, Method beforeMethod, Method afterMethod) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
 
-        Object test = new AnnotationTest();
+        Object testObject = testClass.getConstructor().newInstance();
         boolean result;
 
         if (beforeMethod != null) {
-            beforeMethod.invoke(test);
+            beforeMethod.invoke(testObject);
         }
 
         try{
-            testMethod.invoke(test);
+            testMethod.invoke(testObject);
             result = true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result = false;
         } finally {
             if (afterMethod != null) {
-                afterMethod.invoke(test);
+                afterMethod.invoke(testObject);
             }
         }
         return result;
     }
 
-    static List<Boolean> runTest(String className) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+    static List<Boolean> runTest(String className) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         TestExecutor testExecutor = new TestExecutor();
         Class<?> testClass =  Class.forName(className);
 
@@ -55,13 +55,13 @@ public class TestExecutor {
         }
 
         for (Method testMethod : testMethods) {
-            results.add(testExecutor.executeTest(testMethod, beforeMethod, afterMethod));
+            results.add(testExecutor.executeTest(testClass, testMethod, beforeMethod, afterMethod));
         }
 
         return results;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         List<Boolean> res = runTest("homework.AnnotationTest");
         long successCount = Collections.frequency(res, true);
         long failCount = Collections.frequency(res, false);
