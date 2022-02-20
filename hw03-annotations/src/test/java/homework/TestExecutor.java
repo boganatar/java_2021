@@ -2,7 +2,6 @@ package homework;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,16 +10,16 @@ import java.util.List;
 @Slf4j
 public class TestExecutor {
 
-    private boolean executeTestMethods(Class<?> testClass, Method testMethod, Method beforeMethod, Method afterMethod) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    private boolean executeTestMethods(Class<?> testClass, Method testMethod, Method beforeMethod, Method afterMethod) throws Exception {
 
         Object testObject = testClass.getConstructor().newInstance();
         boolean result;
 
-        if (beforeMethod != null) {
-            beforeMethod.invoke(testObject);
-        }
-
         try{
+            if (beforeMethod != null) {
+                beforeMethod.invoke(testObject);
+            }
+
             testMethod.invoke(testObject);
             result = true;
         } catch (Exception e) {
@@ -34,7 +33,7 @@ public class TestExecutor {
         return result;
     }
 
-    public static List<Boolean> runTest(String className) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    public static List<Boolean> runTest(String className) throws Exception {
         TestExecutor testExecutor = new TestExecutor();
         Class<?> testClass =  Class.forName(className);
 
@@ -61,7 +60,7 @@ public class TestExecutor {
         return results;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    public static void main(String[] args) throws Exception {
         List<Boolean> res = runTest("homework.AnnotationTest");
         long successCount = Collections.frequency(res, true);
         long failCount = Collections.frequency(res, false);
