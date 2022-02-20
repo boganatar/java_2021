@@ -2,7 +2,6 @@ package homework;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,30 +10,30 @@ import java.util.List;
 @Slf4j
 public class TestExecutor {
 
-    public boolean executeTest(Method testMethod, Method beforeMethod, Method afterMethod) throws InvocationTargetException, IllegalAccessException {
+    private boolean executeTestMethods(Class<?> testClass, Method testMethod, Method beforeMethod, Method afterMethod) throws Exception {
 
-        Object test = new AnnotationTest();
+        Object testObject = testClass.getConstructor().newInstance();
         boolean result;
 
-        if (beforeMethod != null) {
-            beforeMethod.invoke(test);
-        }
-
         try{
-            testMethod.invoke(test);
+            if (beforeMethod != null) {
+                beforeMethod.invoke(testObject);
+            }
+
+            testMethod.invoke(testObject);
             result = true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result = false;
         } finally {
             if (afterMethod != null) {
-                afterMethod.invoke(test);
+                afterMethod.invoke(testObject);
             }
         }
         return result;
     }
 
-    static List<Boolean> runTest(String className) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+    public static List<Boolean> runTest(String className) throws Exception {
         TestExecutor testExecutor = new TestExecutor();
         Class<?> testClass =  Class.forName(className);
 
@@ -55,13 +54,13 @@ public class TestExecutor {
         }
 
         for (Method testMethod : testMethods) {
-            results.add(testExecutor.executeTest(testMethod, beforeMethod, afterMethod));
+            results.add(testExecutor.executeTestMethods(testClass, testMethod, beforeMethod, afterMethod));
         }
 
         return results;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+    public static void main(String[] args) throws Exception {
         List<Boolean> res = runTest("homework.AnnotationTest");
         long successCount = Collections.frequency(res, true);
         long failCount = Collections.frequency(res, false);
